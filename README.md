@@ -18,7 +18,7 @@
 {
   "fallDepth": 24,
   "cooldownSeconds": 5,
-  "toastMessage": "VoidQuit: 已自动退出，防止虚空死亡"
+  "toastMessage": "已自动退出，防止虚空死亡"
 }
 ```
 
@@ -26,7 +26,7 @@
 |------|------|------|
 | `fallDepth` | 24 | 世界最底层以下多少格触发 |
 | `cooldownSeconds` | 5 | 触发后冷却秒数，0 关闭 |
-| `toastMessage` | "VoidQuit: 已自动退出..." | 弹窗文字，`""` 不弹 |
+| `toastMessage` | "已自动退出，防止虚空死亡" | 弹窗文字，`""` 不弹 |
 
 ## 触发阈值
 

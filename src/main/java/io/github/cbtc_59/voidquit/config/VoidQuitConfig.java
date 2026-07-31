@@ -27,7 +27,7 @@ public class VoidQuitConfig {
     public int cooldownSeconds = 5;
 
     @SerializedName("toastMessage")
-    public String toastMessage = "VoidQuit: 已自动退出，防止虚空死亡";
+    public String toastMessage = "已自动退出，防止虚空死亡";
 
     private VoidQuitConfig() {
     }
