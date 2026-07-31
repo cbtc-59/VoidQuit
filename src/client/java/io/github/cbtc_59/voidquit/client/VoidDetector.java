@@ -96,7 +96,7 @@ public class VoidDetector {
                 client.player.level().dimension(),
                 config.fallDepth);
 
-        if (config.showToast && !config.toastMessage.isEmpty()) {
+        if (!config.toastMessage.isEmpty()) {
             Gui gui = client.gui;
             gui.setOverlayMessage(Component.literal(config.toastMessage), false);
         }

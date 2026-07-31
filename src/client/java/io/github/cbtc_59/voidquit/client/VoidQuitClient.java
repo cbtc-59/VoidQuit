@@ -32,7 +32,7 @@ public class VoidQuitClient implements ClientModInitializer {
             if (screen instanceof TitleScreen && VoidDetector.shouldShowToast) {
                 VoidDetector.shouldShowToast = false;
                 VoidQuitConfig config = VoidQuitConfig.getInstance();
-                if (config.showToast && !config.toastMessage.isEmpty()) {
+                if (!config.toastMessage.isEmpty()) {
                     showToast(client, config.toastMessage);
                 }
             }
