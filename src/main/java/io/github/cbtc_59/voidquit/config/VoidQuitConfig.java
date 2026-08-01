@@ -26,6 +26,12 @@ public class VoidQuitConfig {
     @SerializedName("cooldownSeconds")
     public int cooldownSeconds = 5;
 
+    @SerializedName("enabledSingleplayer")
+    public boolean enabledSingleplayer = true;
+
+    @SerializedName("enabledServer")
+    public boolean enabledServer = true;
+
     @SerializedName("toastMessage")
     public String toastMessage = "已自动退出，防止虚空死亡";
 

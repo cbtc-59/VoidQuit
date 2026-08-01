@@ -39,6 +39,12 @@ public class VoidDetector {
     }
 
     public static void tick(Minecraft client) {
+        // 检查功能开关
+        VoidQuitConfig config = VoidQuitConfig.getInstance();
+        if (client.isSingleplayer() ? !config.enabledSingleplayer : !config.enabledServer) {
+            return;
+        }
+
         if (client.player == null || client.player.isDeadOrDying()) {
             return;
         }
