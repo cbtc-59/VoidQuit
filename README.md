@@ -45,7 +45,7 @@
 ## 前置
 
 - Minecraft 26.1.2
-- Fabric Loader ≥ 0.19.0
+- Fabric Loader ≥ 0.18.4
 - Fabric API
 
 ## 许可证
