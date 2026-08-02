@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.toasts.SystemToast;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -27,9 +26,9 @@ public class VoidQuitClient implements ClientModInitializer {
             VoidDetector.setInitialCooldown();
         });
 
-        // 注册屏幕初始化事件：退出后回到标题画面时显示 Toast
+        // 注册屏幕初始化事件：退出后回到任意界面时显示 Toast
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
-            if (screen instanceof TitleScreen && VoidDetector.shouldShowToast) {
+            if (VoidDetector.shouldShowToast) {
                 VoidDetector.shouldShowToast = false;
                 VoidQuitConfig config = VoidQuitConfig.getInstance();
                 if (!config.toastMessage.isEmpty()) {
