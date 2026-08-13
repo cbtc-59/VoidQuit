@@ -22,3 +22,6 @@ logs/
 # Claude AI
 CLAUDE.md
 .claude/
+
+# 本地文档
+VoidQuit-需求说明.md

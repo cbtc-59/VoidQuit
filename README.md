@@ -20,7 +20,7 @@
   "cooldownSeconds": 5,
   "enabledSingleplayer": true,
   "enabledServer": true,
-  "toastMessage": "已自动退出，防止虚空死亡"
+  "exitMessage": "已自动退出，防止虚空死亡"
 }
 ```
 
@@ -30,7 +30,7 @@
 | `cooldownSeconds` | 5 | 触发后冷却秒数，0 关闭 |
 | `enabledSingleplayer` | true | 单机模式下是否启用 |
 | `enabledServer` | true | 服务器模式下是否启用 |
-| `toastMessage` | "已自动退出，防止虚空死亡" | 弹窗文字，`""` 不弹 |
+| `exitMessage` | "已自动退出，防止虚空死亡" | 弹窗文字，`""` 不弹 |
 
 ## 触发阈值
 

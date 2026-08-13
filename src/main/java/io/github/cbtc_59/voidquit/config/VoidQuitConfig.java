@@ -1,5 +1,4 @@
 package io.github.cbtc_59.voidquit.config;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
@@ -32,15 +31,12 @@ public class VoidQuitConfig {
     @SerializedName("enabledServer")
     public boolean enabledServer = true;
 
-    @SerializedName("toastMessage")
-    public String toastMessage = "已自动退出，防止虚空死亡";
+    @SerializedName("exitMessage")
+    public String exitMessage = "已自动退出，防止虚空死亡";
 
     private VoidQuitConfig() {
     }
 
-    /**
-     * 获取配置单例
-     */
     public static VoidQuitConfig getInstance() {
         if (instance == null) {
             instance = load();
@@ -48,9 +44,6 @@ public class VoidQuitConfig {
         return instance;
     }
 
-    /**
-     * 从文件加载配置，文件不存在时使用默认值并自动创建
-     */
     private static VoidQuitConfig load() {
         if (Files.exists(CONFIG_PATH)) {
             try (Reader reader = Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8)) {
@@ -59,15 +52,11 @@ public class VoidQuitConfig {
                 System.err.println("[VoidQuit] 读取配置文件失败，使用默认配置: " + e.getMessage());
             }
         }
-        // 配置文件不存在或读取失败，创建默认配置
         VoidQuitConfig config = new VoidQuitConfig();
         config.save();
         return config;
     }
 
-    /**
-     * 保存当前配置到文件
-     */
     public void save() {
         try {
             Files.createDirectories(CONFIG_PATH.getParent());
