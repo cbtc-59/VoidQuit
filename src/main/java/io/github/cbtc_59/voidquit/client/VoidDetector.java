@@ -16,7 +16,7 @@ import io.github.cbtc_59.voidquit.config.VoidQuitConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -134,16 +134,16 @@ public class VoidDetector {
         //$$     }
         //$$ });
         //#else
-        if (client.isSingleplayer()) {
-            IntegratedServer server = client.getSingleplayerServer();
-            if (server != null) { server.halt(true); }
-        }
-        client.disconnectFromWorld(Component.empty());
+        // 断网方案：与 1.21.x 及 tweakermore 一致，断开连接后由 vanilla 机制自动收尾（单机服务器检测断连后自动保存停止）
+        boolean singleplayer = client.isSingleplayer();
+        client.level.disconnect(Component.translatable("multiplayer.status.quitting"));
+        client.disconnectWithProgressScreen();
         if (!config.exitMessage.isEmpty()) {
             client.setScreen(new DisconnectedScreen(
-                    new TitleScreen(),
+                    singleplayer ? new TitleScreen() : new JoinMultiplayerScreen(new TitleScreen()),
                     Component.literal("VoidQuit"),
-                    Component.literal(config.exitMessage)));
+                    Component.literal(config.exitMessage),
+                    singleplayer ? Component.translatable("gui.toTitle") : Component.translatable("gui.toMenu")));
         } else {
             client.setScreen(new TitleScreen());
         }
