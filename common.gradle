@@ -23,7 +23,9 @@ dependencies {
 
 JavaVersion JAVA_COMPATIBILITY = mcVersion >= 26_00_00 ? JavaVersion.VERSION_25
 		: mcVersion >= 1_20_06 ? JavaVersion.VERSION_21
-		: JavaVersion.VERSION_17
+		: mcVersion >= 1_18_00 ? JavaVersion.VERSION_17
+		: mcVersion >= 1_17_00 ? JavaVersion.VERSION_16
+		: JavaVersion.VERSION_1_8
 
 loom {
 	runConfigs.configureEach {
@@ -31,6 +33,23 @@ loom {
 	}
 	runConfigs.client {
 		ideConfigGenerated = true
+	}
+}
+
+// 老版本 MC 的 LWJGL/ASM 不支持新 JDK，按版本给游戏进程选择运行 JVM：
+// 1.16.5/1.17.1 → 17；1.18.2~1.20.6 → 21；1.21.x/26.x → Gradle 自身 JVM（25）
+// Gradle 构建进程本身必须 JDK 21+（loom 要求），不能整体降级
+if (mcVersion < 1_18_00) {
+	tasks.named('runClient', JavaExec).configure {
+		javaLauncher.set(javaToolchains.launcherFor {
+			languageVersion.set(JavaLanguageVersion.of(17))
+		})
+	}
+} else if (mcVersion < 1_21_00) {
+	tasks.named('runClient', JavaExec).configure {
+		javaLauncher.set(javaToolchains.launcherFor {
+			languageVersion.set(JavaLanguageVersion.of(21))
+		})
 	}
 }
 

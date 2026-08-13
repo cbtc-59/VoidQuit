@@ -1,0 +1,27 @@
+{
+	"schemaVersion": 1,
+	"id": "${id}",
+	"version": "${version}",
+	"name": "${name}",
+	"description": "玩家掉入虚空时自动断开连接/退出世界，防止死亡丢物品。",
+	"authors": [
+		"cbtc-59"
+	],
+	"contact": {},
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"io.github.cbtc_59.voidquit.VoidQuit"
+		],
+		"client": [
+			"io.github.cbtc_59.voidquit.client.VoidQuitClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=${loader_dependency}",
+		"minecraft": "${minecraft_dependency}",
+		"java": ">=${java_version}",
+		"fabric": "*"
+	}
+}
