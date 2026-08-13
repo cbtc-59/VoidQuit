@@ -21,7 +21,9 @@ dependencies {
 	}
 }
 
-JavaVersion JAVA_COMPATIBILITY = mcVersion >= 26_00_00 ? JavaVersion.VERSION_25 : JavaVersion.VERSION_21
+JavaVersion JAVA_COMPATIBILITY = mcVersion >= 26_00_00 ? JavaVersion.VERSION_25
+		: mcVersion >= 1_20_06 ? JavaVersion.VERSION_21
+		: JavaVersion.VERSION_17
 
 loom {
 	runConfigs.configureEach {
@@ -45,6 +47,8 @@ processResources {
 		"name"                : project.mod_name,
 		"version"             : fullModVersion,
 		"minecraft_dependency": project.minecraft_dependency,
+		"java_version"        : project.java_version,
+		"loader_dependency"   : project.loader_dependency,
 	]
 	inputs.properties(modProperties)
 
