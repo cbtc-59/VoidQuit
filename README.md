@@ -1,5 +1,9 @@
 # VoidQuit
 
+[![License](https://img.shields.io/github/license/cbtc-59/VoidQuit)](https://choosealicense.com/licenses/mit/)
+[![Modrinth](https://img.shields.io/modrinth/dt/voidquit?color=00AF5C&label=Modrinth%20downloads&logo=modrinth)](https://modrinth.com/mod/voidquit)
+[![GitHub](https://img.shields.io/github/downloads/cbtc-59/VoidQuit/total?color=161616&label=GitHub%20downloads&logo=github)](https://github.com/cbtc-59/VoidQuit/releases)
+
 玩家掉入虚空时自动断开连接/退出世界，防止死亡丢物品。
 
 ## 支持的版本
