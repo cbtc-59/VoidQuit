@@ -56,9 +56,12 @@ if (mcVersion < 1_18_00) {
 String fullModVersion = project.mod_version
 String fullProjectVersion = 'v' + project.mod_version + '-mc' + project.minecraft_version
 
+// 发行版 jar 命名规范（mcmod-standard）：voidquit-mc<版本>-v<版本>-<YYMMDDHHmm>
+def buildTimestamp = new Date().format('yyMMddHHmm')
+
 group = project.maven_group
-base.archivesName = project.archives_base_name
-version = fullProjectVersion
+base.archivesName = project.archives_base_name + '-mc' + project.minecraft_version + '-v' + project.mod_version + '-' + buildTimestamp
+version = ''
 
 processResources {
 	def modProperties = [
