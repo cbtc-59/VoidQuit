@@ -74,3 +74,8 @@
 ## 许可证
 
 MIT
+
+## 致谢 Credits
+
+- 多版本构建基于 [Fallen-Breath/preprocessor](https://github.com/Fallen-Breath/preprocessor)（ReplayMod Preprocessor 的 fork）
+- 退出机制（断网保存）方案参考 [Fallen-Breath/tweakermore](https://github.com/Fallen-Breath/tweakermore)
