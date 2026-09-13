@@ -116,7 +116,9 @@ processResources {
 			"version"              : fullModVersion,
 			"minecraft_dependency" : project.minecraft_dependency,
 			"neoforge_range"       : "[${neoSegs[0]}.${neoSegs[1]},)",
-			"neoforge_loader_range": mcVersion >= 1_20_05 ? '[4,)' : '[3,)',
+			// 官方 MDK 1.20.4~1.21.4 均用 [1,)（javafml 实际版本 2.0/3.0/4.0 均匹配）；
+			// 1.21.5+ 官方模板已删除该字段（FML 不再校验），保留 [1,) 同样无害
+			"neoforge_loader_range": '[1,)',
 		]
 		inputs.properties(neoProperties)
 
