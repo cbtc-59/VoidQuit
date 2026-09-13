@@ -29,3 +29,8 @@ VoidQuit-需求说明.md
 # DSH 项目记忆（本地私有）
 AGENTS.md
 memory/
+
+# 本地工具产物
+.mimosa/
+.v2c/
+.zcode/
