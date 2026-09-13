@@ -1,23 +1,72 @@
+final boolean isNeoForge = project.name.endsWith('-neoforge')
 final int mcVersion = project.mcVersion
-final boolean unobfuscated = mcVersion >= 26_00_00
+final boolean unobfuscated = !isNeoForge && mcVersion >= 26_00_00
+// 主项目不过 preprocess、直接编译根 src 原文（versions/mainProject 文件内容即主项目名）
+final boolean isMainProject = file('../mainProject').text.trim() == project.name
 
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
-apply plugin: unobfuscated ? 'net.fabricmc.fabric-loom' : 'net.fabricmc.fabric-loom-remap'
+if (isNeoForge) {
+	apply plugin: 'net.neoforged.moddev'
+} else {
+	apply plugin: unobfuscated ? 'net.fabricmc.fabric-loom' : 'net.fabricmc.fabric-loom-remap'
+}
 apply plugin: 'com.replaymod.preprocess'
 
-repositories {
+// NEOFORGE 变量供 //#if 条件编译区分 loader；所有子项目（含 Fabric）都必须定义，
+// 否则预处理时求值未定义变量会直接报错。
+// MC 必须显式注册：PreprocessExtension 仅以 convention 提供它，
+// 一旦 vars.put 发生，Gradle MapProperty 的 convention 默认值即失效
+preprocess {
+	vars.put('MC', mcVersion)
+	vars.put('NEOFORGE', isNeoForge ? 1 : 0)
 }
 
-dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	if (!unobfuscated) {
-		mappings "net.fabricmc:yarn:${project.minecraft_version}+build.${project.yarn_build}:v2"
-		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-		modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	} else {
-		implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-		implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+if (isNeoForge) {
+	repositories {
+		maven {
+			name = 'NeoForged'
+			url = 'https://maven.neoforged.net/releases'
+		}
+		mavenCentral()
+	}
+
+	neoForge {
+		version = project.neoforge_version
+		mods {
+			voidquit {
+				sourceSet sourceSets.main
+			}
+		}
+		runs {
+			client {
+				client()
+			}
+		}
+	}
+} else {
+	repositories {
+	}
+
+	dependencies {
+		minecraft "com.mojang:minecraft:${project.minecraft_version}"
+		if (!unobfuscated) {
+			mappings "net.fabricmc:yarn:${project.minecraft_version}+build.${project.yarn_build}:v2"
+			modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+			modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+		} else {
+			implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+			implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+		}
+	}
+
+	loom {
+		runConfigs.configureEach {
+			runDir '../../run'
+		}
+		runConfigs.client {
+			ideConfigGenerated = true
+		}
 	}
 }
 
@@ -27,55 +76,75 @@ JavaVersion JAVA_COMPATIBILITY = mcVersion >= 26_00_00 ? JavaVersion.VERSION_25
 		: mcVersion >= 1_17_00 ? JavaVersion.VERSION_16
 		: JavaVersion.VERSION_1_8
 
-loom {
-	runConfigs.configureEach {
-		runDir '../../run'
-	}
-	runConfigs.client {
-		ideConfigGenerated = true
-	}
-}
-
-// 老版本 MC 的 LWJGL/ASM 不支持新 JDK，按版本给游戏进程选择运行 JVM：
+// loom 专属：老版本 MC 的 LWJGL/ASM 不支持新 JDK，按版本给游戏进程选择运行 JVM：
 // 1.16.5/1.17.1 → 17；1.18.2~1.20.6 → 21；1.21.x/26.x → Gradle 自身 JVM（25）
 // Gradle 构建进程本身必须 JDK 21+（loom 要求），不能整体降级
-if (mcVersion < 1_18_00) {
-	tasks.named('runClient', JavaExec).configure {
-		javaLauncher.set(javaToolchains.launcherFor {
-			languageVersion.set(JavaLanguageVersion.of(17))
-		})
-	}
-} else if (mcVersion < 1_21_00) {
-	tasks.named('runClient', JavaExec).configure {
-		javaLauncher.set(javaToolchains.launcherFor {
-			languageVersion.set(JavaLanguageVersion.of(21))
-		})
+if (!isNeoForge) {
+	if (mcVersion < 1_18_00) {
+		tasks.named('runClient', JavaExec).configure {
+			javaLauncher.set(javaToolchains.launcherFor {
+				languageVersion.set(JavaLanguageVersion.of(17))
+			})
+		}
+	} else if (mcVersion < 1_21_00) {
+		tasks.named('runClient', JavaExec).configure {
+			javaLauncher.set(javaToolchains.launcherFor {
+				languageVersion.set(JavaLanguageVersion.of(21))
+			})
+		}
 	}
 }
 
 String fullModVersion = project.mod_version
 String fullProjectVersion = 'v' + project.mod_version + '-mc' + project.minecraft_version
 
-// 发行版 jar 命名规范（mcmod-standard）：voidquit-mc<版本>-v<版本>-<YYMMDDHHmm>
+// 发行版 jar 命名规范（mcmod-standard）：voidquit[-neoforge]-mc<版本>-v<版本>-<YYMMDDHHmm>
 def buildTimestamp = new Date().format('yyMMddHHmm')
+def loaderSegment = isNeoForge ? '-neoforge' : ''
 
 group = project.maven_group
-base.archivesName = project.archives_base_name + '-mc' + project.minecraft_version + '-v' + project.mod_version + '-' + buildTimestamp
+base.archivesName = project.archives_base_name + loaderSegment + '-mc' + project.minecraft_version + '-v' + project.mod_version + '-' + buildTimestamp
 version = ''
 
 processResources {
-	def modProperties = [
-		"id"                  : project.mod_id,
-		"name"                : project.mod_name,
-		"version"             : fullModVersion,
-		"minecraft_dependency": project.minecraft_dependency,
-		"java_version"        : project.java_version,
-		"loader_dependency"   : project.loader_dependency,
-	]
-	inputs.properties(modProperties)
+	if (isNeoForge) {
+		// neoforge_version 形如 21.1.250 / 26.1.2.106，取前两段生成依赖范围
+		def neoSegs = project.neoforge_version.toString().tokenize('.')
+		def neoProperties = [
+			"id"                   : project.mod_id,
+			"name"                 : project.mod_name,
+			"version"              : fullModVersion,
+			"minecraft_dependency" : project.minecraft_dependency,
+			"neoforge_range"       : "[${neoSegs[0]}.${neoSegs[1]},)",
+			"neoforge_loader_range": mcVersion >= 1_20_05 ? '[4,)' : '[3,)',
+		]
+		inputs.properties(neoProperties)
 
-	filesMatching("fabric.mod.json") {
-		expand modProperties
+		filesMatching(["META-INF/neoforge.mods.toml", "META-INF/mods.toml"]) {
+			expand neoProperties
+		}
+		// Fabric 元数据对 NeoForge 无意义；mods.toml 与 neoforge.mods.toml 按版本线二选一
+		exclude 'fabric.mod.json'
+		if (mcVersion < 1_20_05) {
+			exclude 'META-INF/neoforge.mods.toml'
+		} else {
+			exclude 'META-INF/mods.toml'
+		}
+	} else {
+		def modProperties = [
+			"id"                  : project.mod_id,
+			"name"                : project.mod_name,
+			"version"             : fullModVersion,
+			"minecraft_dependency": project.minecraft_dependency,
+			"java_version"        : project.java_version,
+			"loader_dependency"   : project.loader_dependency,
+		]
+		inputs.properties(modProperties)
+
+		filesMatching("fabric.mod.json") {
+			expand modProperties
+		}
+		exclude 'META-INF/neoforge.mods.toml', 'META-INF/mods.toml'
 	}
 }
 
@@ -83,10 +152,22 @@ tasks.withType(JavaCompile).configureEach {
 	options.encoding = "UTF-8"
 }
 
+// VoidQuitNeoforge.java 仅供 NeoForge 节点经预处理链派生；
+// 主项目直接编译根 src，必须排除，否则 NeoForge 依赖不存在导致编译失败
+if (isMainProject) {
+	sourceSets.main.java.exclude '**/VoidQuitNeoforge.java'
+}
+
 java {
 	sourceCompatibility = JAVA_COMPATIBILITY
 	targetCompatibility = JAVA_COMPATIBILITY
 	withSourcesJar()
+}
+
+// NeoForge：老版本 MC 的游戏进程不能跑在新 JDK 上，用项目工具链选择运行 JVM；
+// 26.1.x 起官方版本无混淆，直接用 Gradle 自身 JVM（25）
+if (isNeoForge && mcVersion < 26_00_00) {
+	java.toolchain.languageVersion = JavaLanguageVersion.of(mcVersion < 1_20_06 ? 17 : 21)
 }
 
 jar {

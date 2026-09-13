@@ -1,3 +1,4 @@
+//#if !NEOFORGE
 package io.github.cbtc_59.voidquit;
 
 import io.github.cbtc_59.voidquit.config.VoidQuitConfig;
@@ -6,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * VoidQuit 主入口
+ * VoidQuit 主入口（Fabric）
  * 轻量级客户端模组，玩家掉入虚空时自动退出，防止死亡丢物品
  */
 public class VoidQuit implements ModInitializer {
@@ -21,3 +22,4 @@ public class VoidQuit implements ModInitializer {
         LOGGER.info("[VoidQuit] 模组已加载，虚空退出保护已就绪");
     }
 }
+//#endif

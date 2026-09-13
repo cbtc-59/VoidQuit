@@ -7,6 +7,10 @@ pluginManagement {
 			url = 'https://maven.fabricmc.net/'
 		}
 		maven {
+			name = 'NeoForged'
+			url = 'https://maven.neoforged.net/releases'
+		}
+		maven {
 			name = 'Jitpack'
 			url = 'https://maven.fallenbreath.me/jitpack'
 			content { includeGroupAndSubgroups('com.github') }

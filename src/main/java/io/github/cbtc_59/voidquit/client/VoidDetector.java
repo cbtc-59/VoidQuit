@@ -1,9 +1,7 @@
 package io.github.cbtc_59.voidquit.client;
 
-import io.github.cbtc_59.voidquit.VoidQuit;
 import io.github.cbtc_59.voidquit.config.VoidQuitConfig;
-
-//#if MC < 12600
+//#if MC < 12600 && !NEOFORGE
 //$$ import net.minecraft.client.MinecraftClient;
 //$$ import net.minecraft.client.gui.screen.DisconnectedScreen;
 //$$ import net.minecraft.client.gui.screen.TitleScreen;
@@ -15,6 +13,7 @@ import io.github.cbtc_59.voidquit.config.VoidQuitConfig;
 //#else
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DisconnectedScreen;
+import net.minecraft.client.gui.screens.ProgressScreen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.network.chat.Component;
@@ -22,12 +21,18 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.GameType;
 //#endif
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VoidDetector {
 
+    // 模组日志统一用 voidquit 名称；不引用 VoidQuit.LOGGER，
+    // 因为该类在 NeoForge 分支不存在（入口是 VoidQuitNeoforge）
+    private static final Logger LOGGER = LoggerFactory.getLogger("voidquit");
+
     private static long cooldownEndTime = 0;
 
-    //#if MC < 12600
+    //#if MC < 12600 && !NEOFORGE
     //$$ private static RegistryKey<World> cachedDimension;
     //$$ private static GameMode cachedGameMode;
     //#else
@@ -38,12 +43,12 @@ public class VoidDetector {
 
     private VoidDetector() {}
 
-    static void setInitialCooldown() {
+    public static void setInitialCooldown() {
         cooldownEndTime = System.currentTimeMillis()
                 + VoidQuitConfig.getInstance().cooldownSeconds * 1000L;
     }
 
-    //#if MC < 12600
+    //#if MC < 12600 && !NEOFORGE
     //$$ public static void tick(MinecraftClient client) {
     //$$     VoidQuitConfig config = VoidQuitConfig.getInstance();
     //$$     if (client.isIntegratedServerRunning() ? !config.enabledSingleplayer : !config.enabledServer) {
@@ -71,7 +76,7 @@ public class VoidDetector {
         }
     }
 
-    //#if MC < 12600
+    //#if MC < 12600 && !NEOFORGE
     //$$ private static double getTriggerY(MinecraftClient client) {
     //$$     RegistryKey<World> dimension = client.world.getRegistryKey();
     //$$     GameMode mode = client.interactionManager.getCurrentGameMode();
@@ -89,7 +94,7 @@ public class VoidDetector {
         return cachedTriggerY;
     }
 
-    //#if MC < 12600
+    //#if MC < 12600 && !NEOFORGE
     //$$ private static double computeTriggerY(RegistryKey<World> dimension, GameMode mode) {
     //$$     int worldMin = dimension == World.OVERWORLD ? -64 : 0;
     //$$     boolean isCreativeOrSpectator = mode == GameMode.CREATIVE || mode == GameMode.SPECTATOR;
@@ -105,23 +110,23 @@ public class VoidDetector {
         return worldMin - fallDepth;
     }
 
-    //#if MC < 12600
+    //#if MC < 12600 && !NEOFORGE
     //$$ private static void triggerVoidQuit(MinecraftClient client) {
     //#else
     private static void triggerVoidQuit(Minecraft client) {
     //#endif
         VoidQuitConfig config = VoidQuitConfig.getInstance();
 
-        VoidQuit.LOGGER.info("[VoidQuit] 触发虚空退出 - 玩家 Y={}，世界={}，fallDepth={}",
+        LOGGER.info("[VoidQuit] 触发虚空退出 - 玩家 Y={}，世界={}，fallDepth={}",
                 (int) client.player.getY(),
-                //#if MC < 12600
+                //#if MC < 12600 && !NEOFORGE
                 //$$ client.world.getRegistryKey(),
                 //#else
                 client.player.level().dimension(),
                 //#endif
                 config.fallDepth);
 
-        //#if MC < 12600
+        //#if MC < 12600 && !NEOFORGE
         //$$ client.execute(() -> {
         //$$     client.world.disconnect();
         //$$     if (!config.exitMessage.isEmpty()) {
@@ -134,10 +139,21 @@ public class VoidDetector {
         //$$     }
         //$$ });
         //#else
-        // 断网方案：与 1.21.x 及 tweakermore 一致，断开连接后由 vanilla 机制自动收尾（单机服务器检测断连后自动保存停止）
+        //#if NEOFORGE && MC < 12106
+        //$$ // 与 vanilla 暂停菜单「保存并退出」一致的两步：先断网，再同步等待服务器保存停止，
+        //$$ // 完成后才显示断开界面；否则服务器停止流程会再弹一个原版断开屏，形成两层按钮
+        //$$ boolean singleplayer = client.isLocalServer();
+        //$$ client.level.disconnect();
+        //$$ if (singleplayer) {
+        //$$     client.disconnect(new ProgressScreen(true));
+        //$$ } else {
+        //$$     client.disconnect();
+        //$$ }
+        //#else
         boolean singleplayer = client.isSingleplayer();
         client.level.disconnect(Component.translatable("multiplayer.status.quitting"));
         client.disconnectWithProgressScreen();
+        //#endif
         if (!config.exitMessage.isEmpty()) {
             client.setScreen(new DisconnectedScreen(
                     singleplayer ? new TitleScreen() : new JoinMultiplayerScreen(new TitleScreen()),

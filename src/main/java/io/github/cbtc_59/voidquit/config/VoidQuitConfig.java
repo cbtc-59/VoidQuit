@@ -2,7 +2,11 @@ package io.github.cbtc_59.voidquit.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+//#if NEOFORGE
+//$$ import net.neoforged.fml.loading.FMLPaths;
+//#else
 import net.fabricmc.loader.api.FabricLoader;
+//#endif
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +20,11 @@ import java.nio.file.Path;
 public class VoidQuitConfig {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+//#if NEOFORGE
+//$$ private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("voidquit.json");
+//#else
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("voidquit.json");
+//#endif
     private static VoidQuitConfig instance;
 
     @SerializedName("fallDepth")

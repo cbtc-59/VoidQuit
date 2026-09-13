@@ -2,6 +2,7 @@ plugins {
 	id 'maven-publish'
 	id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT' apply false
 	id 'net.fabricmc.fabric-loom-remap' version '1.17-SNAPSHOT' apply false
+	id 'net.neoforged.moddev' version '2.0.141' apply false
 
 	// https://github.com/Fallen-Breath/preprocessor
 	id 'com.replaymod.preprocess' version 'c5abb4fb12'
@@ -27,6 +28,18 @@ preprocess {
 	def mc12111 = createNode('1.21.11', 1_21_11, '')
 	def mc26012 = createNode('26.1.2', 26_01_02, '')
 
+	// NeoForge 平行链（数据流与 Fabric 链同向：主项目 26.1.2 → 新版本 → 老版本）
+	def mc1204nf  = createNode('1.20.4-neoforge', 1_20_04, '')
+	def mc1206nf  = createNode('1.20.6-neoforge', 1_20_06, '')
+	def mc1211nf  = createNode('1.21.1-neoforge', 1_21_01, '')
+	def mc1213nf  = createNode('1.21.3-neoforge', 1_21_03, '')
+	def mc1214nf  = createNode('1.21.4-neoforge', 1_21_04, '')
+	def mc1215nf  = createNode('1.21.5-neoforge', 1_21_05, '')
+	def mc1218nf  = createNode('1.21.8-neoforge', 1_21_08, '')
+	def mc12110nf = createNode('1.21.10-neoforge', 1_21_10, '')
+	def mc12111nf = createNode('1.21.11-neoforge', 1_21_11, '')
+	def mc26012nf = createNode('26.1.2-neoforge', 26_01_02, '')
+
 	mc1165.link(mc1171, file('versions/mapping-1.16-1.17.txt'))
 	mc1171.link(mc1182, null)
 	mc1182.link(mc1194, null)
@@ -42,6 +55,21 @@ preprocess {
 	mc1218.link(mc12110, null)
 	mc12110.link(mc12111, null)
 	mc12111.link(mc26012, null)
+
+	// link(数据目标, 数据源)：所有 NeoForge 节点直接从主项目（26.1.2，根 src，Mojmap）派生，
+	// 各自按自身 mcVersion + NEOFORGE=1 求值条件编译（版本差异全部由 //#if MC 消化）。
+	// 不能串成 NeoForge 链：preprocess 插件配置非主项目时要访问父项目的 loom 扩展，
+	// MDG 节点没有 loom 扩展，串行链会在第二个节点配置时失败
+	mc1204nf.link(mc26012, null)
+	mc1206nf.link(mc26012, null)
+	mc1211nf.link(mc26012, null)
+	mc1213nf.link(mc26012, null)
+	mc1214nf.link(mc26012, null)
+	mc1215nf.link(mc26012, null)
+	mc1218nf.link(mc26012, null)
+	mc12110nf.link(mc26012, null)
+	mc12111nf.link(mc26012, null)
+	mc26012nf.link(mc26012, null)
 
 	for (final def node in getNodes()) {
 		findProject(node.project).ext.mcVersion = node.mcVersion

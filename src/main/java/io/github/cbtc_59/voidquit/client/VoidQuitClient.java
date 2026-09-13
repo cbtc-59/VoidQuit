@@ -1,3 +1,4 @@
+//#if !NEOFORGE
 package io.github.cbtc_59.voidquit.client;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -15,3 +16,4 @@ public class VoidQuitClient implements ClientModInitializer {
         });
     }
 }
+//#endif
