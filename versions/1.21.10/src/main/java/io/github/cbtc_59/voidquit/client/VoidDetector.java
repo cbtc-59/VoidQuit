@@ -75,6 +75,8 @@ public class VoidDetector {
                 config.fallDepth);
 
         client.execute(() -> {
+            // 1.21.9+ 的 F3 调试界面在断开屏/主菜单仍会渲染（vanilla 行为变化），断开前关闭
+            client.debugHudEntryList.setF3Enabled(false);
             boolean singleplayer = client.isIntegratedServerRunning();
             client.world.disconnect(Text.translatable("multiplayer.status.quitting"));
             client.disconnectWithProgressScreen();

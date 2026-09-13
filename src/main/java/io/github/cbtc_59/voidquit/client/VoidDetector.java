@@ -128,6 +128,14 @@ public class VoidDetector {
 
         //#if MC < 12600 && !NEOFORGE
         //$$ client.execute(() -> {
+        //#if MC >= 12109 && MC < 12111
+        //$$     // 1.21.9+ 的 F3 界面在断开屏/主菜单仍会渲染（vanilla 行为变化），断开前关闭
+        //$$     client.debugHudEntryList.setF3Enabled(false);
+        //#endif
+        //#if MC >= 12111
+        //$$     // 1.21.11 起 API 由 setF3Enabled 改名 setOverlayVisible
+        //$$     client.debugEntries.setOverlayVisible(false);
+        //#endif
         //$$     client.world.disconnect();
         //$$     if (!config.exitMessage.isEmpty()) {
         //$$         client.setScreen(new DisconnectedScreen(
@@ -143,7 +151,7 @@ public class VoidDetector {
         // 1.21.9+ 的 F3 调试界面在断开屏/主菜单仍会渲染（vanilla 渲染条件不再检查世界状态），
         // 退出前关闭保持界面干净；1.21.11 起 API 由 setF3Visible 改名 setOverlayVisible
         //#if MC < 12111
-        client.debugEntries.setF3Visible(false);
+        //$$ client.debugEntries.setF3Visible(false);
         //#else
         client.debugEntries.setOverlayVisible(false);
         //#endif
