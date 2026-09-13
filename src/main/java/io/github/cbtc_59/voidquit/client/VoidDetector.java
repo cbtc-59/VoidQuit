@@ -139,6 +139,15 @@ public class VoidDetector {
         //$$     }
         //$$ });
         //#else
+        //#if MC >= 12109
+        // 1.21.9+ 的 F3 调试界面在断开屏/主菜单仍会渲染（vanilla 渲染条件不再检查世界状态），
+        // 退出前关闭保持界面干净；1.21.11 起 API 由 setF3Visible 改名 setOverlayVisible
+        //#if MC < 12111
+        client.debugEntries.setF3Visible(false);
+        //#else
+        client.debugEntries.setOverlayVisible(false);
+        //#endif
+        //#endif
         //#if NEOFORGE && MC < 12106
         //$$ // 与 vanilla 暂停菜单「保存并退出」一致的两步：先断网，再同步等待服务器保存停止，
         //$$ // 完成后才显示断开界面；否则服务器停止流程会再弹一个原版断开屏，形成两层按钮
