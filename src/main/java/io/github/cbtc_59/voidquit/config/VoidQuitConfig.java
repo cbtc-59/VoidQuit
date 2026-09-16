@@ -12,12 +12,17 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * VoidQuit 配置管理类
  * 负责读取和保存 config/voidquit.json
  */
 public class VoidQuitConfig {
+
+    // 日志统一用 log4j：1.16.5 classpath 无 slf4j，log4j 全版本可用
+    private static final Logger LOGGER = LogManager.getLogger("voidquit");
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 //#if NEOFORGE
@@ -57,7 +62,7 @@ public class VoidQuitConfig {
             try (Reader reader = Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8)) {
                 return GSON.fromJson(reader, VoidQuitConfig.class);
             } catch (Exception e) {
-                System.err.println("[VoidQuit] 读取配置文件失败，使用默认配置: " + e.getMessage());
+                LOGGER.error("[VoidQuit] 读取配置文件失败，使用默认配置: {}", e.getMessage());
             }
         }
         VoidQuitConfig config = new VoidQuitConfig();
@@ -72,7 +77,7 @@ public class VoidQuitConfig {
                 GSON.toJson(this, writer);
             }
         } catch (IOException e) {
-            System.err.println("[VoidQuit] 保存配置文件失败: " + e.getMessage());
+            LOGGER.error("[VoidQuit] 保存配置文件失败: {}", e.getMessage());
         }
     }
 }
