@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
  * VoidQuit 主入口
  * 轻量级客户端模组，玩家掉入虚空时自动退出，防止死亡丢物品
  * 1.16.5 版本：MC 用 log4j，其余版本用 slf4j
+ * 本地副本保留原因：1.16.5 classpath 无 slf4j，preprocess 链不会覆盖节点已有文件
  */
 public class VoidQuit implements ModInitializer {
 

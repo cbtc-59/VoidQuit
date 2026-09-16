@@ -51,7 +51,9 @@ if (isNeoForge) {
 	dependencies {
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
 		if (!unobfuscated) {
-			mappings "net.fabricmc:yarn:${project.minecraft_version}+build.${project.yarn_build}:v2"
+			// 全版本统一 Mojang 官方映射：与根 src（26.1.2 直连官方名）和 NeoForge（MDG 自带）
+			// 命名一致，preprocess 链可在全部节点间自由传播，无需版本副本
+			mappings loom.officialMojangMappings()
 			modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 			modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 		} else {
