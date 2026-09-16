@@ -34,3 +34,6 @@ memory/
 .mimosa/
 .v2c/
 .zcode/
+
+# 本地工具产物
+out/
