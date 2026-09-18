@@ -105,7 +105,7 @@ String fullProjectVersion = 'v' + project.mod_version + '-mc' + project.minecraf
 
 // 发行版 jar 命名规范（mcmod-standard）：voidquit[-neoforge]-mc<版本>-v<版本>-<YYMMDDHHmm>
 def buildTimestamp = new Date().format('yyMMddHHmm')
-def loaderSegment = isNeoForge ? '-neoforge' : ''
+def loaderSegment = isNeoForge ? '-neoforge' : '-fabric'
 
 group = project.maven_group
 base.archivesName = project.archives_base_name + loaderSegment + '-mc' + project.minecraft_version + '-v' + project.mod_version + '-' + buildTimestamp
