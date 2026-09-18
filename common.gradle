@@ -44,10 +44,10 @@ if (isNeoForge) {
 			}
 		}
 	}
-	} else {
-		repositories {
-			maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' }
-		}
+} else {
+	repositories {
+		maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' }
+	}
 
 	dependencies {
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -59,7 +59,7 @@ if (isNeoForge) {
 			modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 		} else {
 			implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-			implementation "net.fabricmc:fabric-api:fabric-api:${project.fabric_api_version}"
+			implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 			// 开发运行时挂 Mod Menu 便于查看模组图标，仅 26.1.2 主项目，不进发行 jar
 			runtimeOnly 'maven.modrinth:modmenu:18.0.1'
 		}
