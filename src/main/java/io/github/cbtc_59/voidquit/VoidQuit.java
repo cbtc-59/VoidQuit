@@ -3,8 +3,8 @@ package io.github.cbtc_59.voidquit;
 
 import io.github.cbtc_59.voidquit.config.VoidQuitConfig;
 import net.fabricmc.api.ModInitializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * VoidQuit 主入口（Fabric）
@@ -13,7 +13,8 @@ import org.slf4j.LoggerFactory;
 public class VoidQuit implements ModInitializer {
 
     public static final String MOD_ID = "voidquit";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    // 日志统一用 log4j：1.16.5 classpath 无 slf4j，log4j 全版本可用
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     @Override
     public void onInitialize() {
