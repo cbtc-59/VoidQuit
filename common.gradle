@@ -44,9 +44,9 @@ if (isNeoForge) {
 			}
 		}
 	}
-} else {
-	repositories {
-	}
+	} else {
+		repositories {
+		}
 
 	dependencies {
 		minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -58,7 +58,7 @@ if (isNeoForge) {
 			modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 		} else {
 			implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-			implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+			implementation "net.fabricmc:fabric-api:fabric-api:${project.fabric_api_version}"
 		}
 	}
 
@@ -142,6 +142,9 @@ processResources {
 			"minecraft_dependency": project.minecraft_dependency,
 			"java_version"        : project.java_version,
 			"loader_dependency"   : project.loader_dependency,
+			// fabric-api 元包 id 随 MC 版本不同：1.17.x 及更早叫 fabric，1.18.2 起叫 fabric-api，
+			// 仅 1.16.5/1.17.1 节点在其 gradle.properties 覆盖，其余节点用默认值
+			"fabric_api_id"       : project.findProperty('fabric_api_id') ?: 'fabric-api',
 		]
 		inputs.properties(modProperties)
 
