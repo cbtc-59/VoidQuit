@@ -93,7 +93,8 @@ public class VoidDetector {
         //$$ int worldMin = 0;
         //#endif
         boolean isCreativeOrSpectator = mode == GameType.CREATIVE || mode == GameType.SPECTATOR;
-        int fallDepth = VoidQuitConfig.getInstance().fallDepth;
+        // fallDepth 防呆：负数会变成"边界以上就触发"，超大值则 int 减法溢出回绕成正数触发线
+        int fallDepth = Math.max(0, Math.min(VoidQuitConfig.getInstance().fallDepth, 1024));
         if (isCreativeOrSpectator) {
             return Math.min(worldMin - 64.0, worldMin - fallDepth);
         }
