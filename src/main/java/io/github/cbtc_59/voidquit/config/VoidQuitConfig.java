@@ -60,7 +60,13 @@ public class VoidQuitConfig {
     private static VoidQuitConfig load() {
         if (Files.exists(CONFIG_PATH)) {
             try (Reader reader = Files.newBufferedReader(CONFIG_PATH, StandardCharsets.UTF_8)) {
-                return GSON.fromJson(reader, VoidQuitConfig.class);
+                VoidQuitConfig config = GSON.fromJson(reader, VoidQuitConfig.class);
+                // JSON 顶层为字面 null 时 Gson 不抛异常而是返回 null：
+                // 不拦住的话 instance 会存进 null，getInstance 每 tick 重读文件并最终 NPE 崩溃循环
+                if (config != null) {
+                    return config;
+                }
+                LOGGER.error("[VoidQuit] 配置文件内容为空，使用默认配置");
             } catch (Exception e) {
                 LOGGER.error("[VoidQuit] 读取配置文件失败，使用默认配置: {}", e.getMessage());
             }
