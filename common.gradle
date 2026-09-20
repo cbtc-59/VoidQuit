@@ -104,11 +104,20 @@ String fullModVersion = project.mod_version
 String fullProjectVersion = 'v' + project.mod_version + '-mc' + project.minecraft_version
 
 // 发行版 jar 命名规范（mcmod-standard）：voidquit[-neoforge]-mc<版本>-v<版本>-<YYMMDDHHmm>
-def buildTimestamp = new Date().format('yyMMddHHmm')
+// 时间戳仅发版构建注入：-Prelease -PbuildTimestamp=2609201200（时间可用 date +%y%m%d%H%M 生成）；
+// 声明发版却缺时间戳直接报错拒构，杜绝产出错误命名的 jar。平时构建用基础名（无尾巴），
+// 保证同一份代码可复现出同名 jar，且代码未改时 Gradle 增量构建不重打包。
+// 注意：平时命名不能带 -dev 之类尾巴——buildAndGather 的 exclude '*-dev.jar' 用于排除
+// loom 中间产物，默认命名一旦撞上会把新 jar 全部漏收
+def buildTimestamp = (project.findProperty('buildTimestamp') ?: '').toString()
+if (project.hasProperty('release') && buildTimestamp.isEmpty()) {
+    throw new GradleException('发版构建（-Prelease）必须带 -PbuildTimestamp=YYMMDDHHmm，例如 -PbuildTimestamp=' + new Date().format('yyMMddHHmm'))
+}
+def timestampSegment = project.hasProperty('release') ? '-' + buildTimestamp : ''
 def loaderSegment = isNeoForge ? '-neoforge' : '-fabric'
 
 group = project.maven_group
-base.archivesName = project.archives_base_name + loaderSegment + '-mc' + project.minecraft_version + '-v' + project.mod_version + '-' + buildTimestamp
+base.archivesName = project.archives_base_name + loaderSegment + '-mc' + project.minecraft_version + '-v' + project.mod_version + timestampSegment
 version = ''
 
 processResources {

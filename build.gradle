@@ -1,7 +1,8 @@
 plugins {
 	id 'maven-publish'
-	id 'net.fabricmc.fabric-loom' version '1.17-SNAPSHOT' apply false
-	id 'net.fabricmc.fabric-loom-remap' version '1.17-SNAPSHOT' apply false
+	// SNAPSHOT 是流动快照，上游重新发布即可能炸构建；固定到 1.17 系列最新 GA（2026-09-20 查证 maven.fabricmc.net）
+	id 'net.fabricmc.fabric-loom' version '1.17.21' apply false
+	id 'net.fabricmc.fabric-loom-remap' version '1.17.21' apply false
 	id 'net.neoforged.moddev' version '2.0.141' apply false
 
 	// https://github.com/Fallen-Breath/preprocessor
