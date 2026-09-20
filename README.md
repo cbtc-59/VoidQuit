@@ -43,11 +43,15 @@ NeoForge 版本文件名带 `-neoforge` 标识（如 `voidquit-neoforge-mc1.21.1
 
 | 字段 | 默认 | 说明 |
 |------|------|------|
-| `fallDepth` | 24 | 世界最底层以下多少格触发 |
+| `fallDepth` | 24 | 世界最底层以下多少格触发，有效范围 0~64（超过 64 触发线低于虚空伤害线，玩家会先于退出死亡） |
 | `cooldownSeconds` | 5 | 触发后冷却秒数，0 关闭 |
 | `enabledSingleplayer` | true | 单机模式下是否启用 |
 | `enabledServer` | true | 服务器模式下是否启用 |
 | `exitMessage` | "已自动退出，防止虚空死亡" | 弹窗文字，`""` 不弹 |
+
+## 命令
+
+- `/voidquit reload`：重新读取 `config/voidquit.json` 并立即生效，无需重启游戏
 
 ## 触发阈值
 

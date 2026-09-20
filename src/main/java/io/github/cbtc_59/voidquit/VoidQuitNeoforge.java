@@ -1,13 +1,22 @@
 //#if NEOFORGE
+/*
+ * Copyright (c) 2026 cbtc-59
+ * Released under the MIT License.
+ */
+
 package io.github.cbtc_59.voidquit;
 
 import io.github.cbtc_59.voidquit.client.VoidDetector;
+import com.mojang.brigadier.Command;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 //#if MC < 12005
 //$$ import net.neoforged.neoforge.event.TickEvent;
 //#else
@@ -56,6 +65,25 @@ public class VoidQuitNeoforge {
 
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> {
             VoidDetector.setInitialCooldown();
+        });
+
+        // /voidquit reload 客户端命令；RegisterClientCommandsEvent 签名在 1.20.4~26.1.2 一致（本地 sources 查证）
+        NeoForge.EVENT_BUS.addListener((RegisterClientCommandsEvent event) -> {
+            event.getDispatcher().register(
+                    Commands.literal("voidquit")
+                            .then(Commands.literal("reload").executes(ctx -> {
+                                VoidQuitConfig.reload();
+                                VoidDetector.resetCache();
+                                // 聊天反馈断代：26.x 起 ChatComponent.addMessage(Component) 改名 addClientSystemMessage
+                                //#if MC >= 12600
+                                Minecraft.getInstance().gui.getChat().addClientSystemMessage(
+                                        Component.literal("VoidQuit 配置已重载"));
+                                //#else
+                                //$$ Minecraft.getInstance().gui.getChat().addMessage(
+                                //$$         Component.literal("VoidQuit 配置已重载"));
+                                //#endif
+                                return Command.SINGLE_SUCCESS;
+                            })));
         });
     }
 }

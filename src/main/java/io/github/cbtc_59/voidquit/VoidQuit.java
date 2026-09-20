@@ -1,4 +1,9 @@
 //#if !NEOFORGE
+/*
+ * Copyright (c) 2026 cbtc-59
+ * Released under the MIT License.
+ */
+
 package io.github.cbtc_59.voidquit;
 
 import io.github.cbtc_59.voidquit.config.VoidQuitConfig;

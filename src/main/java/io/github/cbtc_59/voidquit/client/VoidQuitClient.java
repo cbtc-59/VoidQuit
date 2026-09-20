@@ -1,4 +1,9 @@
 //#if !NEOFORGE
+/*
+ * Copyright (c) 2026 cbtc-59
+ * Released under the MIT License.
+ */
+
 package io.github.cbtc_59.voidquit.client;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -14,6 +19,8 @@ public class VoidQuitClient implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             VoidDetector.setInitialCooldown();
         });
+
+        VoidQuitCommands.register();
     }
 }
 //#endif

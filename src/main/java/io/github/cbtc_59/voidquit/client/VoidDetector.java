@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 cbtc-59
+ * Released under the MIT License.
+ */
+
 package io.github.cbtc_59.voidquit.client;
 
 import io.github.cbtc_59.voidquit.config.VoidQuitConfig;
@@ -41,6 +46,15 @@ public class VoidDetector {
     public static void setInitialCooldown() {
         cooldownEndTime = System.currentTimeMillis()
                 + VoidQuitConfig.getInstance().cooldownSeconds * 1000L;
+    }
+
+    /**
+     * 清空维度/模式/触发线缓存（/voidquit reload 后调用，让新 fallDepth 立即生效）
+     */
+    public static void resetCache() {
+        cachedDimension = null;
+        cachedGameMode = null;
+        cachedTriggerY = 0;
     }
 
     public static void tick(Minecraft client) {
@@ -93,8 +107,9 @@ public class VoidDetector {
         //$$ int worldMin = 0;
         //#endif
         boolean isCreativeOrSpectator = mode == GameType.CREATIVE || mode == GameType.SPECTATOR;
-        // fallDepth 防呆：负数会变成"边界以上就触发"，超大值则 int 减法溢出回绕成正数触发线
-        int fallDepth = Math.max(0, Math.min(VoidQuitConfig.getInstance().fallDepth, 1024));
+        // fallDepth 防呆：负数会变成"边界以上就触发"；上限 64 是虚空伤害线深度，
+        // fallDepth 超过 64 时触发线落在死亡线之下，玩家必死在退出前，保护失效
+        int fallDepth = Math.max(0, Math.min(VoidQuitConfig.getInstance().fallDepth, 64));
         if (isCreativeOrSpectator) {
             return Math.min(worldMin - 64.0, worldMin - fallDepth);
         }
