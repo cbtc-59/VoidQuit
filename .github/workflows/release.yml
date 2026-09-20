@@ -1,0 +1,51 @@
+# 推送 v* 标签触发的发版流程：全节点构建 → GitHub Release → Modrinth
+# 前置条件见 RELEASE-CHECKLIST.md 第 0~2 步（版本号与 RELEASE-NOTES.md 必须先提交）
+name: 发版
+
+on:
+  push:
+    tags: ['v*']
+
+# GITHUB_TOKEN 新仓库默认只读；创建 Release 需要 contents: write（最小权限：仅此一项）
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          # 非 main 分支/标签构建只读缓存，防止不可信分支污染主缓存（TweakerMore 同款做法）
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      # -Prelease 触发发版模式；时间戳自动取构建时刻。守门逻辑见 common.gradle：
+      # 声明发版却缺时间戳会直接报错拒构
+      - name: 全节点构建
+        run: |
+          chmod +x gradlew
+          ./gradlew buildAndGather -Prelease -PbuildTimestamp=$(date +%y%m%d%H%M)
+
+      - name: 上传 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar
+          body_path: RELEASE-NOTES.md
+
+      - name: 发布 Modrinth
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          CHANGELOG_PATH: RELEASE-NOTES.md
+        run: python3 .github/scripts/publish_modrinth.py
