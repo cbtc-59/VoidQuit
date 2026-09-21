@@ -11,13 +11,15 @@
 | MC 版本 | Loader | 世界底界 |
 |---|---|---|
 | 1.16.5、1.17.1 | Fabric | 0 |
-| 1.18.2、1.19.4 | Fabric | -64 |
-| 1.20.1、1.20.2 | Fabric | -64 |
+| 1.18.2、1.19.4 | Fabric / Forge | -64 |
+| 1.19.2 | Forge | -64 |
+| 1.20.1 | Fabric / Forge | -64 |
+| 1.20.2 | Fabric | -64 |
 | 1.20.4、1.20.6 | Fabric / NeoForge | -64 |
 | 1.21.1、1.21.3、1.21.4、1.21.5、1.21.8、1.21.10、1.21.11 | Fabric / NeoForge | -64 |
 | 26.1.2 | Fabric / NeoForge | -64 |
 
-NeoForge 版本文件名带 `-neoforge` 标识（如 `voidquit-neoforge-mc1.21.1-...`），无需 Fabric API。
+NeoForge 版本文件名带 `-neoforge` 标识（如 `voidquit-neoforge-mc1.21.1-...`），Forge 版本带 `-forge` 标识，两者均无需 Fabric API。Forge 覆盖 1.18~1.20.1（各 jar 以编译基准版本命名，兼容范围见 Modrinth 元数据）。
 
 ## 功能
 
@@ -77,6 +79,10 @@ NeoForge 版本文件名带 `-neoforge` 标识（如 `voidquit-neoforge-mc1.21.1
 - Fabric Loader ≥ 0.14.21（1.18.2+）/ ≥ 0.11.2（1.16.5~1.17.1）
 - Fabric API
 - Java 17+（1.16.5~1.20.4）、Java 21+（1.20.6~1.21.11）、Java 25+（26.1.2）
+
+**Forge 版**（1.18.2 / 1.19.2 / 1.19.4 / 1.20.1）：
+- Forge（按 MC 版本对应版本线）
+- Java 17+
 
 **NeoForge 版**（1.20.4 / 1.20.6 / 1.21.1 / 1.21.3 ~ 1.21.11 / 26.1.2）：
 - NeoForge（按 MC 版本对应版本线）

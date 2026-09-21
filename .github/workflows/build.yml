@@ -43,7 +43,7 @@ jobs:
       - name: 构建代表节点
         run: |
           chmod +x gradlew
-          ./gradlew :26.1.2:build :1.16.5:build :1.21.11:build :1.20.4-neoforge:build
+          ./gradlew :26.1.2:build :1.16.5:build :1.21.11:build :1.20.4-neoforge:build :1.18.2-forge:build
 
       - name: 收集产物名
         run: ls -1 build/libs/ versions/*/build/libs/ 2>/dev/null || true

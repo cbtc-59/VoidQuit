@@ -25,6 +25,8 @@
 - [ ] 1.16.5（最低版本：TextComponent、老退出路径、v1 命令注册）
 - [ ] 1.21.11（disconnectWithProgressScreen 路径、v2 命令注册）
 - [ ] 1.20.4-neoforge（NeoForge 老事件模型）
+- [ ] 1.18.2-forge（Forge 最老节点：无参构造、LoggedInEvent、TextComponent 文本）
+- [ ] 1.20.1-forge（Forge 区间断代另一端 + 主力版本）
 
 每节点检查项：
 
