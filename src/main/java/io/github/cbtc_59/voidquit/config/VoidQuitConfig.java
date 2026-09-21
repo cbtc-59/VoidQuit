@@ -9,6 +9,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 //#if NEOFORGE
 //$$ import net.neoforged.fml.loading.FMLPaths;
+//#elseif FORGE
+//$$ import net.minecraftforge.fml.loading.FMLPaths;
 //#else
 import net.fabricmc.loader.api.FabricLoader;
 //#endif
@@ -33,6 +35,8 @@ public class VoidQuitConfig {
 
     private static final String DEFAULT_EXIT_MESSAGE = "已自动退出，防止虚空死亡";
 //#if NEOFORGE
+//$$ private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("voidquit.json");
+//#elseif FORGE
 //$$ private static final Path CONFIG_PATH = FMLPaths.CONFIGDIR.get().resolve("voidquit.json");
 //#else
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("voidquit.json");

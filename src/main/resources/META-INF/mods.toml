@@ -17,9 +17,9 @@ description = '''
 '''
 
 [[dependencies.${id}]]
-modId = "neoforge"
+modId = "${dependency_modid}"
 type = "required"
-versionRange = "${neoforge_range}"
+versionRange = "${dependency_range}"
 ordering = "NONE"
 side = "CLIENT"
 

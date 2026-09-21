@@ -1,4 +1,4 @@
-//#if !NEOFORGE
+//#if !NEOFORGE && !FORGE
 /*
  * Copyright (c) 2026 cbtc-59
  * Released under the MIT License.

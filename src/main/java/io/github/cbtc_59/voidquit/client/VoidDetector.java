@@ -59,8 +59,8 @@ public class VoidDetector {
 
     public static void tick(Minecraft client) {
         VoidQuitConfig config = VoidQuitConfig.getInstance();
-        // isSingleplayer 1.19.4 起才有，更早版本用 isLocalServer（语义相同）
-        //#if MC >= 11900
+        // isSingleplayer 1.19.4 起才有（client.txt 实证 1.19.2 无、1.19.4 有），更早版本用 isLocalServer（语义相同）
+        //#if MC >= 11904
         boolean inSingleplayer = client.isSingleplayer();
         //#else
         //$$ boolean inSingleplayer = client.isLocalServer();
@@ -137,8 +137,8 @@ public class VoidDetector {
         client.debugEntries.setOverlayVisible(false);
         //#endif
 
-        // 单人判断：isSingleplayer 1.19.4 起才有，更早版本用 isLocalServer（语义相同）
-        //#if MC >= 11900
+        // 单人判断：isSingleplayer 1.19.4 起才有（client.txt 实证 1.19.2 无、1.19.4 有），更早版本用 isLocalServer（语义相同）
+        //#if MC >= 11904
         boolean singleplayer = client.isSingleplayer();
         //#else
         //$$ boolean singleplayer = client.isLocalServer();
