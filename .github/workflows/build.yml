@@ -18,11 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 26.x 节点用 JDK 25 编译；Gradle 工具链给 NeoForge 老节点选 17/21（runner 预装兜底，显式装 21/17 不赌 runner 预装清单）
+      # 26.x 节点用 JDK 25 编译；Gradle 工具链给 NeoForge 老节点选 17/21。
+      # 注意顺序：setup-java 每次调用都会改写 JAVA_HOME，最后一次设置的生效——
+      # 必须让 JDK 25 压轴，否则 Gradle 跑在老 JDK 上（loom 要求 21+，直接拒载）
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '25'
+          java-version: '17'
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -30,7 +32,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '25'
 
       - uses: gradle/actions/setup-gradle@v4
         with:
