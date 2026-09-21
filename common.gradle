@@ -1,4 +1,6 @@
 final boolean isNeoForge = project.name.endsWith('-neoforge')
+// '-neoforge' 不以 '-forge' 结尾，两个判断天然互斥
+final boolean isForge = project.name.endsWith('-forge')
 final int mcVersion = project.mcVersion
 final boolean unobfuscated = !isNeoForge && mcVersion >= 26_00_00
 // 主项目不过 preprocess、直接编译根 src 原文（versions/mainProject 文件内容即主项目名）
@@ -8,18 +10,21 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 if (isNeoForge) {
 	apply plugin: 'net.neoforged.moddev'
+} else if (isForge) {
+	apply plugin: 'net.neoforged.moddev.legacyforge'
 } else {
 	apply plugin: unobfuscated ? 'net.fabricmc.fabric-loom' : 'net.fabricmc.fabric-loom-remap'
 }
 apply plugin: 'com.replaymod.preprocess'
 
-// NEOFORGE 变量供 //#if 条件编译区分 loader；所有子项目（含 Fabric）都必须定义，
+// NEOFORGE/FORGE 变量供 //#if 条件编译区分 loader；所有子项目（含 Fabric）都必须定义，
 // 否则预处理时求值未定义变量会直接报错。
 // MC 必须显式注册：PreprocessExtension 仅以 convention 提供它，
 // 一旦 vars.put 发生，Gradle MapProperty 的 convention 默认值即失效
 preprocess {
 	vars.put('MC', mcVersion)
 	vars.put('NEOFORGE', isNeoForge ? 1 : 0)
+	vars.put('FORGE', isForge ? 1 : 0)
 }
 
 if (isNeoForge) {
@@ -33,6 +38,21 @@ if (isNeoForge) {
 
 	neoForge {
 		version = project.neoforge_version
+		mods {
+			voidquit {
+				sourceSet sourceSets.main
+			}
+		}
+		runs {
+			client {
+				client()
+			}
+		}
+	}
+} else if (isForge) {
+	// DSL 与主 MDG 同构（ModDevGradle 官方 legacytest 范例）；Forge maven 由插件内置
+	legacyForge {
+		version = project.forge_version
 		mods {
 			voidquit {
 				sourceSet sourceSets.main
@@ -84,7 +104,8 @@ JavaVersion JAVA_COMPATIBILITY = mcVersion >= 26_00_00 ? JavaVersion.VERSION_25
 // loom 专属：老版本 MC 的 LWJGL/ASM 不支持新 JDK，按版本给游戏进程选择运行 JVM：
 // 1.16.5/1.17.1 → 17；1.18.2~1.20.6 → 21；1.21.x/26.x → Gradle 自身 JVM（25）
 // Gradle 构建进程本身必须 JDK 21+（loom 要求），不能整体降级
-if (!isNeoForge) {
+// MDG 系（NeoForge/Forge）节点不走 loom，由各自 toolchain 决定
+if (!isNeoForge && !isForge) {
 	if (mcVersion < 1_18_00) {
 		tasks.named('runClient', JavaExec).configure {
 			javaLauncher.set(javaToolchains.launcherFor {
@@ -114,7 +135,7 @@ if (project.hasProperty('release') && buildTimestamp.isEmpty()) {
     throw new GradleException('发版构建（-Prelease）必须带 -PbuildTimestamp=YYMMDDHHmm，例如 -PbuildTimestamp=' + new Date().format('yyMMddHHmm'))
 }
 def timestampSegment = project.hasProperty('release') ? '-' + buildTimestamp : ''
-def loaderSegment = isNeoForge ? '-neoforge' : '-fabric'
+def loaderSegment = isNeoForge ? '-neoforge' : (isForge ? '-forge' : '-fabric')
 
 group = project.maven_group
 base.archivesName = project.archives_base_name + loaderSegment + '-mc' + project.minecraft_version + '-v' + project.mod_version + timestampSegment
@@ -132,7 +153,7 @@ processResources {
 			"neoforge_range"       : "[${neoSegs[0]}.${neoSegs[1]},)",
 			// 官方 MDK 1.20.4~1.21.4 均用 [1,)（javafml 实际版本 2.0/3.0/4.0 均匹配）；
 			// 1.21.5+ 官方模板已删除该字段（FML 不再校验），保留 [1,) 同样无害
-			"neoforge_loader_range": '[1,)',
+			"loader_range"         : '[1,)',
 		]
 		inputs.properties(neoProperties)
 
@@ -146,6 +167,22 @@ processResources {
 		} else {
 			exclude 'META-INF/mods.toml'
 		}
+	} else if (isForge) {
+		// Forge 节点：javafml loader version = Forge major（各版官方 MDK 的
+		// loader_version_range=[@FORGE_SPEC_VERSION@,) 实证），per 节点属性注入
+		def forgeProperties = [
+			"id"                  : project.mod_id,
+			"name"                : project.mod_name,
+			"version"             : fullModVersion,
+			"minecraft_dependency" : project.minecraft_dependency,
+			"loader_range"        : project.forge_loader_range,
+		]
+		inputs.properties(forgeProperties)
+
+		filesMatching("META-INF/mods.toml") {
+			expand forgeProperties
+		}
+		exclude 'fabric.mod.json', 'META-INF/neoforge.mods.toml'
 	} else {
 		def modProperties = [
 			"id"                  : project.mod_id,
@@ -183,9 +220,9 @@ java {
 	withSourcesJar()
 }
 
-// NeoForge：老版本 MC 的游戏进程不能跑在新 JDK 上，用项目工具链选择运行 JVM；
+// NeoForge/Forge：老版本 MC 的游戏进程不能跑在新 JDK 上，用项目工具链选择运行 JVM；
 // 26.1.x 起官方版本无混淆，直接用 Gradle 自身 JVM（25）
-if (isNeoForge && mcVersion < 26_00_00) {
+if ((isNeoForge || isForge) && mcVersion < 26_00_00) {
 	java.toolchain.languageVersion = JavaLanguageVersion.of(mcVersion < 1_20_06 ? 17 : 21)
 }
 

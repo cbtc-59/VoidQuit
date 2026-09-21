@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "${neoforge_loader_range}"
+loaderVersion = "${loader_range}"
 license = "MIT"
 
 [[mods]]
@@ -9,6 +9,9 @@ displayName = "${name}"
 authors = "cbtc-59"
 logoFile = "assets/${id}/icon.png"
 logoBlur = false
+# Forge 客户端 mod 标准配置（官方文档 Sides 页）：服务端不装本 mod 时不触发版本不匹配红叉；
+# NeoForge 1.20.2+ 已移除 displayTest 校验机制，该字段被忽略、保留无害
+displayTest = "IGNORE_SERVER_VERSION"
 description = '''
 玩家掉入虚空时自动断开连接/退出世界，防止死亡丢物品。
 '''

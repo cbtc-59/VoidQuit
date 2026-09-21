@@ -4,6 +4,8 @@ plugins {
 	id 'net.fabricmc.fabric-loom' version '1.17.21' apply false
 	id 'net.fabricmc.fabric-loom-remap' version '1.17.21' apply false
 	id 'net.neoforged.moddev' version '2.0.141' apply false
+	// MDG legacy：Forge 1.17~1.20.1 官方工具链（ModDevGradle LEGACY.md），与主插件同号发布
+	id 'net.neoforged.moddev.legacyforge' version '2.0.141' apply false
 
 	// https://github.com/Fallen-Breath/preprocessor
 	id 'com.replaymod.preprocess' version 'c5abb4fb12'
@@ -71,6 +73,19 @@ preprocess {
 	mc12110nf.link(mc26012, null)
 	mc12111nf.link(mc26012, null)
 	mc26012nf.link(mc26012, null)
+
+	// Forge 平行链（MDG legacy，官方支持 Forge 1.17~1.20.1）：与 NeoForge 链同理星形派生，
+	// MDG legacy 节点也没有 loom 扩展，不能串链。区间选择依据（JEI 玩家量 + 工具链边界）
+	// 见 README 版本表与 memory/optimization-goals.md 4.2 条目
+	def mc1182f = createNode('1.18.2-forge', 1_18_02, '')
+	def mc1192f = createNode('1.19.2-forge', 1_19_02, '')
+	def mc1194f = createNode('1.19.4-forge', 1_19_04, '')
+	def mc1201f = createNode('1.20.1-forge', 1_20_01, '')
+
+	mc1182f.link(mc26012, null)
+	mc1192f.link(mc26012, null)
+	mc1194f.link(mc26012, null)
+	mc1201f.link(mc26012, null)
 
 	for (final def node in getNodes()) {
 		findProject(node.project).ext.mcVersion = node.mcVersion
