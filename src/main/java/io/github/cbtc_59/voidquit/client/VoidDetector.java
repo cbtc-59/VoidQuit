@@ -73,7 +73,9 @@ public class VoidDetector {
         }
 
         long now = System.currentTimeMillis();
-        if (now < cooldownEndTime) { return; }
+        if (now < cooldownEndTime) {
+            return;
+        }
 
         double triggerY = getTriggerY(client);
         if (client.player.getY() < triggerY) {
