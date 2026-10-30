@@ -91,8 +91,8 @@ OPENER = urllib.request.build_opener(NoRedirect)
 
 
 def parse_jar(name):
-    """voidquit-fabric-mc1.21.1-v1.0.2-2609201200.jar / -dev.jar -> (loader, mc_version)"""
-    m = re.match(rf"voidquit-(fabric|neoforge)-mc(.+)-v{re.escape(VERSION_NUMBER)}-(?:dev|\d+)\.jar$", name)
+    """voidquit-{loader}-mc<版本>-v<模组版本>-<时间戳>.jar -> (loader, mc_version)"""
+    m = re.match(rf"voidquit-(fabric|neoforge|forge)-mc(.+)-v{re.escape(VERSION_NUMBER)}-\d{{10}}\.jar$", name)
     if not m:
         return None
     return m.group(1), m.group(2)
@@ -155,7 +155,7 @@ def main():
         if not parsed:
             continue
         loader, mcver = parsed
-        node = mcver + ("-neoforge" if loader == "neoforge" else "")
+        node = mcver + (f"-{loader}" if loader in ("neoforge", "forge") else "")
         entries.append({
             "jar": p,
             "loader": loader,

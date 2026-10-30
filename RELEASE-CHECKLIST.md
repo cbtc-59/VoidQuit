@@ -14,8 +14,8 @@
 ./gradlew buildAndGather
 ```
 
-- [ ] 全部 26 个节点构建成功，零报错
-- [ ] `build/libs/` 产物数量正确（26 个发行 jar；日常构建不带时间戳，名字形如 `voidquit-fabric-mc1.21.1-v1.0.1.jar`）
+- [ ] 全部 30 个节点构建成功，零报错
+- [ ] `build/libs/` 产物数量正确（30 个发行 jar；日常构建不带时间戳，名字形如 `voidquit-fabric-mc1.21.1-v1.0.1.jar`）
 
 ## 2. 抽样冒烟测试（runClient）
 
@@ -60,7 +60,7 @@
 - [ ] 检查产物文件名带正确时间戳（缺 `-PbuildTimestamp` 会直接报错拒构，不会产出错误命名 jar）
 - [ ] `git tag vX.Y.Z` 指向发版提交并推送
 - [ ] GitHub Release：标题与 tag 同名，上传全部发行 jar（不含 sources），描述粘贴 RELEASE-NOTES.md
-- [ ] Modrinth 发布：`CHANGELOG_PATH=RELEASE-NOTES.md MODRINTH_TOKEN=... python .github/scripts/publish_modrinth.py`（先 `--dry` 干跑核对 26 条）
+- [ ] Modrinth 发布：`CHANGELOG_PATH=RELEASE-NOTES.md MODRINTH_TOKEN=... python .github/scripts/publish_modrinth.py`（先 `--dry` 干跑核对 30 条）
 - [ ] 核对 Modrinth 各条目的 game_versions 与节点 properties 一致
 
 ## 4. 收尾
